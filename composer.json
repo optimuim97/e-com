@@ -14,7 +14,10 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "*",
         "laravel/tinker": "^2.10.1",
-        "modules/auth": "*"
+        "modules/auth": "*",
+        "modules/products": "*",
+        "modules/cart": "*",
+        "modules/orders": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -29,6 +32,10 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "Modules\\Auth\\": "app-modules/auth/src/",
+            "Modules\\Products\\": "app-modules/products/src/",
+            "Modules\\Cart\\": "app-modules/cart/src/",
+            "Modules\\Orders\\": "app-modules/orders/src/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }

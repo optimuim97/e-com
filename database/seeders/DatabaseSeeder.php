@@ -15,11 +15,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->command->info('🌱 Démarrage du seeding de la base de données...');
+        $this->command->info('');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Utilisateurs
+        $this->command->info('👥 Création des utilisateurs...');
+        $this->call(UserSeeder::class);
+        $this->command->info('');
+
+        // Catégories (doit être avant les produits)
+        $this->command->info('📁 Création des catégories...');
+        $this->call(\Modules\Products\Database\Seeders\CategorySeeder::class);
+        $this->command->info('');
+
+        // Produits
+        $this->command->info('📦 Création des produits...');
+        $this->call(\Modules\Products\Database\Seeders\ProductSeeder::class);
+        $this->command->info('');
+
+        // Images des produits
+        $this->command->info('🖼️  Création des images de produits...');
+        $this->call(\Modules\Products\Database\Seeders\ProductImageSeeder::class);
+        $this->command->info('');
+
+        $this->command->info('✅ Seeding terminé avec succès!');
+        $this->command->info('');
+        $this->command->info('📊 Statistiques:');
+        $this->command->info('   Utilisateurs: ' . \App\Models\User::count());
+        $this->command->info('   Catégories: ' . \Modules\Products\Models\Category::count());
+        $this->command->info('   Produits: ' . \Modules\Products\Models\Product::count());
+        $this->command->info('   Images: ' . \Modules\Products\Models\ProductImage::count());
     }
 }

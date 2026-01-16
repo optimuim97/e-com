@@ -1,0 +1,73 @@
+{
+	"id": "products-environment-2026",
+	"name": "E-Commerce Products Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8003",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "category_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "category_slug",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "created_category_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "product_slug",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "created_product_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "workflow_category_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "workflow_subcategory_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "workflow_product_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

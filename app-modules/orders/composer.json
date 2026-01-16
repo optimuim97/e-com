@@ -1,0 +1,17 @@
+{
+    "name": "modules/orders",
+    "description": "Orders and Payments Management Module",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Modules\\Orders\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Orders\\Providers\\OrdersServiceProvider"
+            ]
+        }
+    }
+}

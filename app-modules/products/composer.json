@@ -1,0 +1,23 @@
+{
+    "name": "modules/products",
+    "description": "Module de gestion des produits pour l'application e-commerce",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Modules\\Products\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0",
+        "wendelladriel/laravel-validated-dto": "^3.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Products\\Providers\\ProductsServiceProvider"
+            ]
+        }
+    }
+}

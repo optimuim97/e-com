@@ -1,0 +1,1164 @@
+{
+	"info": {
+		"_postman_id": "products-module-e-commerce-2026",
+		"name": "E-Commerce - Products Module API",
+		"description": "Collection complète pour tester le module Products avec toutes les fonctionnalités de gestion de produits et catégories pour un site e-commerce.\n\n## Fonctionnalités\n- Gestion complète des produits (CRUD)\n- Gestion des catégories hiérarchiques\n- Gestion des stocks\n- Filtres avancés\n- Images multiples\n- Prix promotionnels\n- Produits en vedette",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Catégories",
+			"item": [
+				{
+					"name": "Liste des Catégories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has categories array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    ",
+									"    if (jsonData.data.length > 0) {",
+									"        pm.environment.set(\"category_id\", jsonData.data[0].id);",
+									"        pm.environment.set(\"category_slug\", jsonData.data[0].slug);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						},
+						"description": "Récupère la liste de toutes les catégories actives."
+					},
+					"response": []
+				},
+				{
+					"name": "Arborescence Complète",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has tree structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/tree",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "tree"]
+						},
+						"description": "Récupère l'arborescence complète des catégories avec leurs enfants."
+					},
+					"response": []
+				},
+				{
+					"name": "Catégories Racines",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/roots",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "roots"]
+						},
+						"description": "Récupère uniquement les catégories de premier niveau (sans parent)."
+					},
+					"response": []
+				},
+				{
+					"name": "Catégories avec Compteur",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/with-product-count",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "with-product-count"]
+						},
+						"description": "Récupère les catégories avec le nombre de produits dans chacune."
+					},
+					"response": []
+				},
+				{
+					"name": "Détails Catégorie par ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "{{category_id}}"]
+						},
+						"description": "Récupère les détails d'une catégorie spécifique."
+					},
+					"response": []
+				},
+				{
+					"name": "Détails Catégorie par Slug",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/slug/{{category_slug}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "slug", "{{category_slug}}"]
+						},
+						"description": "Récupère une catégorie par son slug (URL-friendly)."
+					},
+					"response": []
+				},
+				{
+					"name": "Créer Catégorie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Category created successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.environment.set(\"created_category_id\", jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Électronique\",\n    \"slug\": \"electronique\",\n    \"description\": \"Tous les produits électroniques\",\n    \"is_active\": true,\n    \"sort_order\": 0,\n    \"meta_title\": \"Électronique - Boutique\",\n    \"meta_description\": \"Découvrez notre sélection de produits électroniques\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						},
+						"description": "Crée une nouvelle catégorie. Nécessite l'authentification."
+					},
+					"response": []
+				},
+				{
+					"name": "Créer Sous-Catégorie",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Ordinateurs\",\n    \"slug\": \"ordinateurs\",\n    \"description\": \"Ordinateurs portables et de bureau\",\n    \"parent_id\": {{category_id}},\n    \"is_active\": true,\n    \"sort_order\": 0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						},
+						"description": "Crée une sous-catégorie avec un parent_id."
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier Catégorie",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_id\": {{created_category_id}},\n    \"name\": \"Électronique & High-Tech\",\n    \"description\": \"Produits électroniques et high-tech de qualité\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories/{{created_category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "{{created_category_id}}"]
+						},
+						"description": "Modifie une catégorie existante."
+					},
+					"response": []
+				},
+				{
+					"name": "Réorganiser Catégories",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories\": [\n        {\"id\": 1, \"sort_order\": 0},\n        {\"id\": 2, \"sort_order\": 1},\n        {\"id\": 3, \"sort_order\": 2}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "reorder"]
+						},
+						"description": "Réorganise l'ordre d'affichage des catégories."
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer Catégorie",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/{{created_category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "{{created_category_id}}"]
+						},
+						"description": "Supprime une catégorie. Les sous-catégories sont déplacées vers le parent."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des catégories de produits."
+		},
+		{
+			"name": "Produits",
+			"item": [
+				{
+					"name": "Liste des Produits",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has products\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    ",
+									"    if (jsonData.data.length > 0) {",
+									"        pm.environment.set(\"product_id\", jsonData.data[0].id);",
+									"        pm.environment.set(\"product_slug\", jsonData.data[0].slug);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Liste tous les produits avec pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits avec Filtres",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products?search=iphone&min_price=500&max_price=2000&status=active&is_featured=1&sort_by=price&sort_order=desc&per_page=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "search",
+									"value": "iphone",
+									"description": "Recherche dans nom, description, SKU"
+								},
+								{
+									"key": "min_price",
+									"value": "500"
+								},
+								{
+									"key": "max_price",
+									"value": "2000"
+								},
+								{
+									"key": "status",
+									"value": "active",
+									"description": "draft, active, archived"
+								},
+								{
+									"key": "is_featured",
+									"value": "1"
+								},
+								{
+									"key": "sort_by",
+									"value": "price",
+									"description": "name, price, created_at, view_count, quantity"
+								},
+								{
+									"key": "sort_order",
+									"value": "desc",
+									"description": "asc ou desc"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Recherche et filtre les produits avec de nombreux critères."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits par Catégorie",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products?category_ids[]=1&category_ids[]=2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "category_ids[]",
+									"value": "1"
+								},
+								{
+									"key": "category_ids[]",
+									"value": "2"
+								}
+							]
+						},
+						"description": "Filtre les produits par une ou plusieurs catégories."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits en Vedette",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/featured?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "featured"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Récupère les produits marqués comme vedettes."
+					},
+					"response": []
+				},
+				{
+					"name": "Détails Produit par ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Product has required fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('name');",
+									"    pm.expect(jsonData.data).to.have.property('price');",
+									"    pm.expect(jsonData.data).to.have.property('sku');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						},
+						"description": "Détails complets d'un produit avec images et catégories."
+					},
+					"response": []
+				},
+				{
+					"name": "Détails Produit par Slug",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/slug/{{product_slug}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "slug", "{{product_slug}}"]
+						},
+						"description": "Récupère un produit par son slug (URL SEO-friendly)."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits Similaires",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}/related?limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}", "related"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Produits similaires basés sur les catégories communes."
+					},
+					"response": []
+				},
+				{
+					"name": "Créer Produit Simple",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Product created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.environment.set(\"created_product_id\", jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"iPhone 15 Pro\",\n    \"slug\": \"iphone-15-pro\",\n    \"description\": \"Le dernier iPhone avec puce A17 Pro et appareil photo révolutionnaire\",\n    \"short_description\": \"Performances exceptionnelles\",\n    \"price\": 1299.99,\n    \"sku\": \"IPHONE-15-PRO-001\",\n    \"quantity\": 50,\n    \"status\": \"active\",\n    \"category_ids\": [1]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Crée un produit avec les champs essentiels."
+					},
+					"response": []
+				},
+				{
+					"name": "Créer Produit Complet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"MacBook Pro 16\\\"\",\n    \"slug\": \"macbook-pro-16\",\n    \"description\": \"Ordinateur portable professionnel avec écran Retina XDR\",\n    \"short_description\": \"Le meilleur MacBook pour les professionnels\",\n    \"price\": 2999.99,\n    \"compare_price\": 3499.99,\n    \"cost\": 2200.00,\n    \"sku\": \"MBP-16-M3-512-GRAY\",\n    \"barcode\": \"194253123456\",\n    \"quantity\": 25,\n    \"low_stock_threshold\": 5,\n    \"track_inventory\": true,\n    \"weight\": 2.15,\n    \"length\": 35.57,\n    \"width\": 24.81,\n    \"height\": 1.68,\n    \"status\": \"active\",\n    \"is_featured\": true,\n    \"is_visible\": true,\n    \"meta_title\": \"MacBook Pro 16\\\" - M3 Pro - Boutique\",\n    \"meta_description\": \"Achetez le MacBook Pro 16 pouces avec puce M3 Pro\",\n    \"meta_keywords\": \"macbook, apple, ordinateur, portable, m3\",\n    \"attributes\": {\n        \"processor\": \"Apple M3 Pro\",\n        \"ram\": \"32GB\",\n        \"storage\": \"512GB SSD\",\n        \"color\": \"Space Gray\",\n        \"screen\": \"16.2\\\" Retina XDR\"\n    },\n    \"category_ids\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Crée un produit avec tous les champs disponibles."
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier Produit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{created_product_id}},\n    \"name\": \"iPhone 15 Pro Max\",\n    \"price\": 1399.99,\n    \"compare_price\": 1499.99,\n    \"quantity\": 75,\n    \"is_featured\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{created_product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{created_product_id}}"]
+						},
+						"description": "Modifie partiellement un produit existant."
+					},
+					"response": []
+				},
+				{
+					"name": "Dupliquer Produit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}/duplicate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}", "duplicate"]
+						},
+						"description": "Duplique un produit avec toutes ses données (sauf SKU et slug)."
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer Produit",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{created_product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{created_product_id}}"]
+						},
+						"description": "Suppression douce (soft delete) d'un produit."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des produits."
+		},
+		{
+			"name": "Gestion des Stocks",
+			"item": [
+				{
+					"name": "Mettre à Jour Stock",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 100,\n    \"operation\": \"set\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}/stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}", "stock"]
+						},
+						"description": "Met à jour le stock d'un produit (set, increment, decrement)."
+					},
+					"response": []
+				},
+				{
+					"name": "Ajouter au Stock",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 50,\n    \"operation\": \"increment\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}/stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}", "stock"]
+						},
+						"description": "Ajoute des unités au stock existant."
+					},
+					"response": []
+				},
+				{
+					"name": "Retirer du Stock",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 10,\n    \"operation\": \"decrement\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}/stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}", "stock"]
+						},
+						"description": "Retire des unités du stock (vente)."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits Stock Bas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/inventory/low-stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "inventory", "low-stock"]
+						},
+						"description": "Liste des produits avec stock inférieur au seuil."
+					},
+					"response": []
+				},
+				{
+					"name": "Produits en Rupture",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/inventory/out-of-stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "inventory", "out-of-stock"]
+						},
+						"description": "Liste des produits avec quantité = 0."
+					},
+					"response": []
+				}
+			],
+			"description": "Gestion et suivi des stocks de produits."
+		},
+		{
+			"name": "Opérations en Masse",
+			"item": [
+				{
+					"name": "Mise à Jour Statut en Masse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_ids\": [1, 2, 3],\n    \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/bulk/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "bulk", "status"]
+						},
+						"description": "Modifie le statut de plusieurs produits simultanément."
+					},
+					"response": []
+				},
+				{
+					"name": "Archiver Produits",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_ids\": [4, 5, 6],\n    \"status\": \"archived\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/bulk/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "bulk", "status"]
+						},
+						"description": "Archive plusieurs produits en une seule opération."
+					},
+					"response": []
+				}
+			],
+			"description": "Opérations sur plusieurs produits simultanément."
+		},
+		{
+			"name": "Cas d'Erreurs",
+			"item": [
+				{
+					"name": "Produit Inexistant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "99999"]
+						},
+						"description": "Tente d'accéder à un produit qui n'existe pas."
+					},
+					"response": []
+				},
+				{
+					"name": "Créer Produit Sans Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product\",\n    \"price\": 99.99\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Tente de créer un produit sans token d'authentification."
+					},
+					"response": []
+				},
+				{
+					"name": "Validation SKU Dupliqué",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Error mentions SKU\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(JSON.stringify(jsonData)).to.include('sku');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Produit Test\",\n    \"slug\": \"produit-test-duplicate\",\n    \"price\": 99.99,\n    \"sku\": \"EXISTING-SKU\",\n    \"quantity\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Tente de créer un produit avec un SKU déjà utilisé."
+					},
+					"response": []
+				},
+				{
+					"name": "Champs Requis Manquants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Has validation errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Sans nom ni prix\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Tente de créer un produit sans les champs obligatoires."
+					},
+					"response": []
+				}
+			],
+			"description": "Tests de cas d'erreurs et validation."
+		},
+		{
+			"name": "Workflows Complets",
+			"item": [
+				{
+					"name": "1. Créer Structure Complète",
+					"item": [
+						{
+							"name": "1.1 Créer Catégorie Principale",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"workflow_category_id\", jsonData.data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"High-Tech\",\n    \"slug\": \"high-tech\",\n    \"description\": \"Produits high-tech\",\n    \"is_active\": true\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/categories",
+									"host": ["{{base_url}}"],
+									"path": ["api", "categories"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.2 Créer Sous-Catégorie",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"workflow_subcategory_id\", jsonData.data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Smartphones\",\n    \"slug\": \"smartphones\",\n    \"parent_id\": {{workflow_category_id}},\n    \"is_active\": true\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/categories",
+									"host": ["{{base_url}}"],
+									"path": ["api", "categories"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.3 Créer Produit",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"workflow_product_id\", jsonData.data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Samsung Galaxy S24\",\n    \"slug\": \"samsung-galaxy-s24\",\n    \"description\": \"Dernier smartphone Samsung\",\n    \"short_description\": \"Innovation et performance\",\n    \"price\": 899.99,\n    \"compare_price\": 999.99,\n    \"sku\": \"SGS24-001\",\n    \"barcode\": \"8806095123456\",\n    \"quantity\": 200,\n    \"low_stock_threshold\": 20,\n    \"is_featured\": true,\n    \"category_ids\": [{{workflow_subcategory_id}}]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/categories",
+									"host": ["{{base_url}}"],
+									"path": ["api", "products"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.4 Vérifier Arborescence",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/categories/tree",
+									"host": ["{{base_url}}"],
+									"path": ["api", "categories", "tree"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2. Gestion Stock Complet",
+					"item": [
+						{
+							"name": "2.1 Vérifier Stock Initial",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/products/{{workflow_product_id}}",
+									"host": ["{{base_url}}"],
+									"path": ["api", "products", "{{workflow_product_id}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.2 Vendre 50 Unités",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"quantity\": 50,\n    \"operation\": \"decrement\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/products/{{workflow_product_id}}/stock",
+									"host": ["{{base_url}}"],
+									"path": ["api", "products", "{{workflow_product_id}}", "stock"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.3 Réapprovisionner",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"quantity\": 100,\n    \"operation\": \"increment\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/products/{{workflow_product_id}}/stock",
+									"host": ["{{base_url}}"],
+									"path": ["api", "products", "{{workflow_product_id}}", "stock"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.4 Vérifier Stock Bas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/products/inventory/low-stock",
+									"host": ["{{base_url}}"],
+									"path": ["api", "products", "inventory", "low-stock"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Scénarios complets de A à Z."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8003",
+			"type": "string"
+		}
+	]
+}
